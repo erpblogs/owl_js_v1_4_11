@@ -14,19 +14,24 @@ from http.server import BaseHTTPRequestHandler
         send_error(): Phương thức này trả về lỗi HTTP cho client.
         """
 
-CLIENT_PATH = 'client/src'
+CLIENT_PATH = 'client/website'
+HOME_PAGE_URL = ['', 'home']
 
 
 class Server(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path in ['/', '/index.html']:
-            self.path = '/index.html'
+        relative_path = self.path.split('/')[1]
+        if relative_path in HOME_PAGE_URL:
+            relative_path = 'home'
+
         try:
             split_path = os.path.splitext(self.path)
             request_extension = split_path[1]
             if request_extension != ".py":
+                if request_extension == "":
+                    self.path = f'{relative_path}/index.html'
 
-                asset_path = os.path.abspath(f'{CLIENT_PATH}{self.path}')
+                asset_path = os.path.abspath(f'{CLIENT_PATH}/{self.path}')
                 f = open(asset_path).read()
                 # f = open(self.path[1:]).read()
                 self.send_response(200)
